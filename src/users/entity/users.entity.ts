@@ -5,9 +5,10 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   DeleteDateColumn,
-  BaseEntity
+  BaseEntity, OneToOne, JoinColumn
 } from "typeorm";
 import { v4 as uuid } from 'uuid';
+import { Tokens } from "../../auth/entity/tokens.entity";
 
 @Entity({ name: 'Users' })
 export class User extends BaseEntity {
@@ -28,6 +29,10 @@ export class User extends BaseEntity {
 
   @Column({ default: true })
   isActive: boolean;
+
+  @OneToOne(() => Tokens, (tokens) => tokens.user)
+  @JoinColumn({ name: 'tokensId' })
+  tokens: Tokens;
 
   @CreateDateColumn()
   createdAt: Date;
