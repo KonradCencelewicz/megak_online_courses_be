@@ -10,7 +10,7 @@ import {
 import { v4 as uuid } from 'uuid';
 import { Tokens } from "../../auth/entity/tokens.entity";
 
-@Entity({ name: 'Users' })
+@Entity({ name: 'users' })
 export class User extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;

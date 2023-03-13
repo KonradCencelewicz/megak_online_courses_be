@@ -13,6 +13,6 @@ export default (): TypeOrmModuleOptions => ({
    User,
    Tokens
  ],
- entityPrefix: 'Megak_',
- // synchronize: true,
+ entityPrefix: 'megak_',
+ synchronize: true,
 });
