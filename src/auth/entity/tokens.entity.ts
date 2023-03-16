@@ -2,9 +2,8 @@ import {
   Entity,
   Column,
   PrimaryGeneratedColumn,
-  BaseEntity, OneToOne, JoinColumn
+  BaseEntity, OneToOne
 } from "typeorm";
-import { v4 as uuid } from 'uuid';
 import { User } from "../../users/entity/users.entity";
 
 @Entity({ name: 'tokens' })

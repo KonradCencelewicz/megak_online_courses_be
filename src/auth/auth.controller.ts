@@ -1,6 +1,6 @@
 import { Body, Controller, HttpCode, HttpStatus, Post, Req, UseGuards } from "@nestjs/common";
 import { LocalAuthGuard } from "./local-auth.guard";
-import { RequestWithUser, RequestWithUserDataFromTokenRt, RequestWithUserDataIdEmail } from "./types/type";
+import { RequestWithUser, RequestWithUserDataFromTokenRt } from "./types/type";
 import { AuthService } from "./auth.service";
 import { CreateUserDto } from '../users/dto/createUser.dto'
 import { JwtAuthGuard } from "./jwt-auth.guard";
@@ -26,7 +26,7 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Post('logout')
   @HttpCode(HttpStatus.OK)
-  logout(@Req() req: RequestWithUserDataIdEmail) {
+  logout(@Req() req: RequestWithUser) {
     return this.authService.logout(req.user);
   }
 

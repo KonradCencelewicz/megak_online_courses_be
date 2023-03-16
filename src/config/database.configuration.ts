@@ -1,6 +1,7 @@
 import { TypeOrmModuleOptions } from "@nestjs/typeorm";
 import { User } from "../users/entity/users.entity";
 import { Tokens } from "../auth/entity/tokens.entity";
+import { Roles } from "../auth/entity/roles.entity";
 
 export default (): TypeOrmModuleOptions => ({
  type: 'mysql',
@@ -11,7 +12,8 @@ export default (): TypeOrmModuleOptions => ({
  database: process.env.DATA_DATABASE,
  entities: [
    User,
-   Tokens
+   Tokens,
+   Roles
  ],
  entityPrefix: 'megak_',
  synchronize: true,

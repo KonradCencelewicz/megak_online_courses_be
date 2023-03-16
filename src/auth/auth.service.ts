@@ -1,16 +1,15 @@
 import { ForbiddenException, Injectable } from "@nestjs/common";
 import { UsersService } from "../users/users.service";
-import * as bcrypt from 'bcrypt';
 import { JwtService } from "@nestjs/jwt";
 import { CreateUserDto } from "../users/dto/createUser.dto";
 import { User } from "../users/entity/users.entity";
 import { jwtTokenDataRt, Tokens as TokensType } from "./types/type";
-import { RegisterResponse, UserDataIdUsername } from "../users/types/type";
+import { RegisterResponse } from "../users/types/type";
 import jwtConfiguration from "../config/jwt.configuration";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { Tokens } from "./entity/tokens.entity";
-import { hashValue } from './../utils/hashed/hashed'
+import { compareHashValue, hashValue } from "../utils/hashed/hashed";
 
 @Injectable()
 export class AuthService {
@@ -25,7 +24,7 @@ export class AuthService {
   async validateUser(email: string, pass: string): Promise<User> {
     const user = await this.usersService.findUser(email);
 
-    const checkPassword = await bcrypt.compare(pass, user.password);
+    const checkPassword = await compareHashValue(user.password, pass);
 
     if(!checkPassword) {
       return null;
@@ -44,8 +43,7 @@ export class AuthService {
     }
   }
 
-  async logout(userData: UserDataIdUsername): Promise<any> {
-    const user = await this.usersRepository.findOneOrFail({ where: { id: userData.userId }, relations: ['tokens'] });
+  async logout(user: User): Promise<any> {
     const tokenToDelete = user.tokens.id;
     user.tokens = null;
     await this.usersRepository.save(user);
@@ -64,7 +62,7 @@ export class AuthService {
       throw new ForbiddenException('Access denied');
     }
 
-    const rtmatches = await bcrypt.compare(userData.refreshToken, user.tokens.refresh_token);
+    const rtmatches = await compareHashValue(user.tokens.refresh_token, userData.refreshToken);
 
     if(!rtmatches) {
       throw new ForbiddenException('Access denied');

@@ -5,10 +5,10 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   DeleteDateColumn,
-  BaseEntity, OneToOne, JoinColumn
+  BaseEntity, OneToOne, JoinColumn, ManyToMany, JoinTable
 } from "typeorm";
-import { v4 as uuid } from 'uuid';
 import { Tokens } from "../../auth/entity/tokens.entity";
+import { Roles } from "../../auth/entity/roles.entity";
 
 @Entity({ name: 'users' })
 export class User extends BaseEntity {
@@ -24,7 +24,7 @@ export class User extends BaseEntity {
   @Column({ type: "varchar", unique: true })
   email: string;
 
-  @Column({ type: "varchar", length: 60 })
+  @Column()
   password: string;
 
   @Column({ default: true })
@@ -33,6 +33,10 @@ export class User extends BaseEntity {
   @OneToOne(() => Tokens, (tokens) => tokens.user)
   @JoinColumn({ name: 'tokensId' })
   tokens: Tokens;
+
+  @ManyToMany(() => Roles)
+  @JoinTable()
+  roles: Roles[];
 
   @CreateDateColumn()
   createdAt: Date;
