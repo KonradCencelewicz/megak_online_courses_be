@@ -5,11 +5,12 @@ import { User } from "./entity/users.entity";
 import { UsersController } from './users.controller';
 import { Roles } from "../auth/entity/roles.entity";
 import { IsEmailUnique } from "./validator/IsEmailUnique.validator";
+import { UsersRolesService } from "./usersRoles.service";
 
 @Global()
 @Module({
   imports: [TypeOrmModule.forFeature([User, Roles])],
-  providers: [UsersService, IsEmailUnique],
+  providers: [UsersService, UsersRolesService, IsEmailUnique],
   exports: [UsersService, IsEmailUnique],
   controllers: [UsersController],
 })

@@ -12,7 +12,7 @@ export class CreateUserDto {
 
   @IsEmail()
   @IsNotEmpty()
-  // @Validate(IsEmailUnique)
+  @Validate(IsEmailUnique)
   email: string;
 
   @IsNotEmpty()
