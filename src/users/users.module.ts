@@ -6,10 +6,11 @@ import { UsersController } from './users.controller';
 import { Roles } from "../auth/entity/roles.entity";
 import { IsEmailUnique } from "./validator/IsEmailUnique.validator";
 import { UsersRolesService } from "./usersRoles.service";
+import { Courses } from "../courses/entity/courses.entity";
 
 @Global()
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Roles])],
+  imports: [TypeOrmModule.forFeature([User, Roles, Courses])],
   providers: [UsersService, UsersRolesService, IsEmailUnique],
   exports: [UsersService, IsEmailUnique],
   controllers: [UsersController],

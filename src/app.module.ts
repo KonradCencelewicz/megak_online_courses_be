@@ -8,6 +8,7 @@ import { UsersModule } from './users/users.module';
 import databaseConfiguration from "./config/database.configuration";
 import envConfiguration from "./config/env.configuration";
 import { DataSource } from "typeorm";
+import { CoursesModule } from './courses/courses.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { DataSource } from "typeorm";
     TypeOrmModule.forRoot(databaseConfiguration()),
     AuthModule,
     UsersModule,
+    CoursesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

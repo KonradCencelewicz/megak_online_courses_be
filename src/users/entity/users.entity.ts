@@ -5,13 +5,15 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   DeleteDateColumn,
-  BaseEntity, OneToOne, JoinColumn, ManyToMany, JoinTable
+  BaseEntity, OneToOne, JoinColumn, ManyToMany, JoinTable, ManyToOne, OneToMany
 } from "typeorm";
 import { Tokens } from "../../auth/entity/tokens.entity";
 import { Roles } from "../../auth/entity/roles.entity";
+import { UserInterface } from "../types/type";
+import { Courses } from "../../courses/entity/courses.entity";
 
 @Entity({ name: 'users' })
-export class User extends BaseEntity {
+export class User extends BaseEntity implements UserInterface{
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -37,6 +39,9 @@ export class User extends BaseEntity {
   @ManyToMany(() => Roles)
   @JoinTable()
   roles: Roles[];
+
+  @OneToMany(() => Courses, (cours) => cours.creator)
+  courses: Courses[];
 
   @CreateDateColumn()
   createdAt: Date;

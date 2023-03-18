@@ -2,6 +2,8 @@ import { TypeOrmModuleOptions } from "@nestjs/typeorm";
 import { User } from "../users/entity/users.entity";
 import { Tokens } from "../auth/entity/tokens.entity";
 import { Roles } from "../auth/entity/roles.entity";
+import { Courses } from "../courses/entity/courses.entity";
+import { Category } from "../courses/entity/category.entity";
 
 export default (): TypeOrmModuleOptions => ({
  type: 'mysql',
@@ -13,7 +15,9 @@ export default (): TypeOrmModuleOptions => ({
  entities: [
    User,
    Tokens,
-   Roles
+   Roles,
+   Courses,
+   Category,
  ],
  entityPrefix: 'megak_',
  synchronize: true,
