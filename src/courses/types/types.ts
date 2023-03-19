@@ -4,8 +4,9 @@ import { Category } from "../entity/category.entity";
 export interface ICourses extends withUsersStamps{
   id: string;
   title: string;
+  slug: string;
   description: string;
-  imageUrl: string;
+  imgUrl: string;
   categories: Category[];
   status: boolean;
 }
@@ -13,4 +14,8 @@ export interface ICourses extends withUsersStamps{
 export interface ICategory {
   id: number;
   name: string;
+}
+
+export interface withCategories {
+  categoriesIds: number[];
 }

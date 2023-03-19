@@ -9,10 +9,15 @@ import { Courses } from "./courses.entity";
 
 @Entity()
 export class Category extends BaseEntity implements ICategory {
-  @PrimaryGeneratedColumn()
+  static ID_COLUMN = 'id';
+  static NAME_COLUMN = 'name';
+
+  static COURSES_RELATION = 'courses';
+
+  @PrimaryGeneratedColumn({name: 'id'})
   id: number;
 
-  @Column({type: 'varchar', length: 100, unique: true})
+  @Column({type: 'varchar', length: 100, unique: true, name: 'name'})
   name: string;
 
   @ManyToMany(() => Courses)

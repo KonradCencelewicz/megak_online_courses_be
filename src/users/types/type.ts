@@ -10,7 +10,7 @@ export interface UserInterface extends withUsersDatesStamps{
   isActive: boolean;
 }
 
-export interface withUsersStamps extends withUsersDatesStamps, withUsersIdStamps {};
+export interface withUsersStamps extends withUsersDatesStamps, withUsersIdStamps {}
 
 export interface withUsersDatesStamps {
   createdAt: Date;
@@ -19,7 +19,7 @@ export interface withUsersDatesStamps {
 }
 
 export interface withUsersIdStamps {
-  creator: User;
+  createdBy: User;
   updatedBy: string;
   deletedBy: string | null;
 }

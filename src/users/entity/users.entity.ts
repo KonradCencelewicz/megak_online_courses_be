@@ -5,7 +5,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   DeleteDateColumn,
-  BaseEntity, OneToOne, JoinColumn, ManyToMany, JoinTable, ManyToOne, OneToMany
+  BaseEntity, OneToOne, JoinColumn, ManyToMany, JoinTable, OneToMany
 } from "typeorm";
 import { Tokens } from "../../auth/entity/tokens.entity";
 import { Roles } from "../../auth/entity/roles.entity";
@@ -40,7 +40,7 @@ export class User extends BaseEntity implements UserInterface{
   @JoinTable()
   roles: Roles[];
 
-  @OneToMany(() => Courses, (cours) => cours.creator)
+  @OneToMany(() => Courses, (cours) => cours.createdBy)
   courses: Courses[];
 
   @CreateDateColumn()

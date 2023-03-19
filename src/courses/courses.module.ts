@@ -5,10 +5,11 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { User } from "../users/entity/users.entity";
 import { Courses } from "./entity/courses.entity";
 import { Category } from "./entity/category.entity";
+import { isColumnValueUnique } from "./validator/isColumnValueUnique";
 
 @Module({
   controllers: [CoursesController],
-  providers: [CoursesService],
+  providers: [CoursesService, isColumnValueUnique],
   imports: [TypeOrmModule.forFeature([User, Courses, Category])]
 })
 export class CoursesModule {}
