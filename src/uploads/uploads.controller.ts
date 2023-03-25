@@ -1,25 +1,48 @@
-import { Controller, InternalServerErrorException, Post, UploadedFile, UseInterceptors } from "@nestjs/common";
+import {
+  Controller, Get,
+  Param,
+  Post, Req, Res,
+  UploadedFile, UseGuards,
+  UseInterceptors
+} from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
-import * as fs from "fs";
+import { multerOptionConfig } from "../config/multerOption.config";
+import { UploadsService } from "./uploads.service";
+import { RolesGuard } from "../auth/roles.guard";
+import { Reflector } from "@nestjs/core";
+import { JwtAuthGuard } from "../auth/jwt-auth.guard";
+import { Roles } from "../auth/roles.decorators";
+import { RoleEnum } from "../auth/enums/role.enum";
+import { RequestWithUser } from "../auth/types/type";
+import { Response } from "express";
 
 @Controller('uploads')
 export class UploadsController {
-  @Post('courses')
-  @UseInterceptors(FileInterceptor('courseImg'))
+  constructor(
+    private readonly uploadsService: UploadsService
+  ) {}
+
+  @UseGuards(new RolesGuard(new Reflector()))
+  @UseGuards(JwtAuthGuard)
+  @Roles(RoleEnum.INSTRUCTOR)
+  @Post('courses/:id')
+  @UseInterceptors(FileInterceptor('courseImg', multerOptionConfig))
   async uploadCourseFile(
-    @UploadedFile() courseImg
+    @Param('id') courseId: string,
+    @UploadedFile() courseImg: Omit<Express.Multer.File, 'buffer'>,
+    @Req() req: RequestWithUser,
   ) {
-    try {
-      fs.writeFileSync(`${process.env.UPLOAD_TEMP_DIR}/${courseImg.originalname}`, courseImg.buffer);
-      return {
-        status: 'success',
-        message: "File uploaded successfully"
-      }
-    } catch (error) {
-      throw new InternalServerErrorException({
-        status: 'failed',
-        message: error.message
-      });
-    }
+    return await this.uploadsService.saveCourseImg(courseImg, courseId, req.user);
+  }
+
+  @UseGuards(new RolesGuard(new Reflector()))
+  @UseGuards(JwtAuthGuard)
+  @Roles(RoleEnum.INSTRUCTOR)
+  @Get('courses/:id/img')
+  async downloadCourseImg(
+    @Param('id') courseId: string,
+    @Res({ passthrough: true } ) res: Response,
+  ) {
+    return this.uploadsService.sendCourseImg(courseId, res);
   }
 }

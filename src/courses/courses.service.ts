@@ -77,14 +77,13 @@ export class CoursesService {
   }
 
   private async setUpCourse(course: Courses, data: CreateCourseDto, user: User) {
-    const { title, description, imgUrl, slug, categoriesIds } = data;
+    const { title, description, slug, categoriesIds } = data;
 
     const categories = await this.categoryRepository.findBy({ id: In(categoriesIds) });
 
     course.title = title;
     course.slug = slug;
     course.description = description;
-    course.imgUrl = imgUrl;
     course.categories = categories;
     course.updatedBy = user.id;
   }

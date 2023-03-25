@@ -2,7 +2,7 @@ import { ArrayUnique, IsNotEmpty, Length, Validate } from "class-validator";
 import { ICourses, withCategories } from "../types/types";
 import { isColumnValueUnique } from "../validator/isColumnValueUnique";
 
-export type CreateCourseDtoType = Pick<ICourses, 'title' | 'description' | 'imgUrl'> & withCategories;
+export type CreateCourseDtoType = Pick<ICourses, 'title' | 'description'> & withCategories;
 
 export class CreateCourseDto implements CreateCourseDtoType {
   @IsNotEmpty()
@@ -18,9 +18,6 @@ export class CreateCourseDto implements CreateCourseDtoType {
   @IsNotEmpty()
   @Length(1, 1000)
   description: string;
-
-  @IsNotEmpty()
-  imgUrl: string;
 
   @ArrayUnique()
   categoriesIds: number[];
