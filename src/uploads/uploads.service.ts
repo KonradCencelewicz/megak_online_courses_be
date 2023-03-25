@@ -1,4 +1,4 @@
-import { Injectable, StreamableFile } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable, StreamableFile } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { Courses } from "../courses/entity/courses.entity";
@@ -15,7 +15,14 @@ export class UploadsService {
   ) {}
 
   public async saveCourseImg(courseImg: Omit<Express.Multer.File, 'buffer'>, courseId: string, user: User): Promise<boolean> {
-    const course = await this.coursesRepository.findOneOrFail({ where: { id: courseId } });
+    const course = await this.coursesRepository.findOneOrFail({ where: { id: courseId }, relations: [Courses.CREATOR_RELATION] });
+
+    if(course.createdBy.id !== user.id) {
+      throw new HttpException(
+        { status: HttpStatus.FORBIDDEN, error: "Not enough permission!" },
+        HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+
     course.imgUrl = courseImg.path;
     await this.coursesRepository.save(course);
     return true;
