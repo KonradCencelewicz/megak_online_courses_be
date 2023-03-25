@@ -9,6 +9,7 @@ import databaseConfiguration from "./config/database.configuration";
 import envConfiguration from "./config/env.configuration";
 import { DataSource } from "typeorm";
 import { CoursesModule } from './courses/courses.module';
+import { UploadsModule } from './uploads/uploads.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { CoursesModule } from './courses/courses.module';
     AuthModule,
     UsersModule,
     CoursesModule,
+    UploadsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

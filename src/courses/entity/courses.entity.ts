@@ -26,7 +26,7 @@ export class Courses extends BaseEntity implements ICourses {
   static DELETED_BY_COLUMN = 'deletedBy';
 
   static CATEGORIES_RELATION = 'categories';
-  static CREATOR_RELATION = 'creator';
+  static CREATOR_RELATION = 'createdBy';
 
   @PrimaryGeneratedColumn('uuid')
   id: string;
