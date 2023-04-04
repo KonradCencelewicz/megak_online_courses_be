@@ -22,12 +22,50 @@ import { Courses } from "./entity/courses.entity";
 import { RequestWithUser } from "../auth/types/type";
 import { UpdateCourseDto } from "./dto/updateCourse.dto";
 import { Pagination } from "nestjs-typeorm-paginate";
+import { CreateLessonDto } from "./dto/createLesson.dto";
+import { UpdateLessonDto } from "./dto/updateLesson.dto";
+import { CoursesWithLessons } from "./types/types";
 
 @Controller('courses')
 export class CoursesController {
   constructor(
     private readonly coursesService: CoursesService,
   ) {}
+
+  @UseGuards(new RolesGuard(new Reflector()))
+  @UseGuards(JwtAuthGuard)
+  @Post('/:id/lesson')
+  public createLesson(
+    @Body() createLessonDto: CreateLessonDto,
+    @Param('id') courseId,
+    @Req() req: RequestWithUser
+  ): Promise<boolean> {
+    return this.coursesService.createLesson(courseId, createLessonDto, req.user);
+  }
+
+  @UseGuards(new RolesGuard(new Reflector()))
+  @UseGuards(JwtAuthGuard)
+  @Roles(RoleEnum.INSTRUCTOR)
+  @Patch('/:courseid/lesson/:id')
+  public updateLesson(
+    @Body() updateLessonDto: UpdateLessonDto,
+    @Param('id') lessonId,
+    @Param('courseid') courseId,
+    @Req() req: RequestWithUser
+  ): Promise<boolean> {
+    return this.coursesService.updateLesson(courseId, lessonId, updateLessonDto, req.user);
+  }
+
+  @UseGuards(new RolesGuard(new Reflector()))
+  @UseGuards(JwtAuthGuard)
+  @Roles(RoleEnum.INSTRUCTOR)
+  @Delete('/:courseId/lesson/:id')
+  public deleteLesson(
+    @Param('id') lessonId,
+    @Req() req: RequestWithUser
+  ): Promise<boolean> {
+    return this.coursesService.deleteLesson(lessonId, req.user);
+  }
 
   @UseGuards(new RolesGuard(new Reflector()))
   @UseGuards(JwtAuthGuard)
@@ -56,7 +94,7 @@ export class CoursesController {
   @Get('/:id')
   public viewCourse(
     @Param('id') courseId,
-  ): Promise<Courses> {
+  ): Promise<CoursesWithLessons> {
     return this.coursesService.viewCourse(courseId);
   }
 
@@ -82,4 +120,5 @@ export class CoursesController {
   ): Promise<boolean> {
     return this.coursesService.deleteCourse(courseId, req.user);
   }
+
 }

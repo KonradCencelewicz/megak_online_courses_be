@@ -37,7 +37,6 @@ export class UploadsController {
 
   @UseGuards(new RolesGuard(new Reflector()))
   @UseGuards(JwtAuthGuard)
-  @Roles(RoleEnum.INSTRUCTOR)
   @Get('courses/:id/img')
   async downloadCourseImg(
     @Param('id') courseId: string,

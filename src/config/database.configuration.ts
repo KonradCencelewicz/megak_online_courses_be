@@ -4,6 +4,7 @@ import { Tokens } from "../auth/entity/tokens.entity";
 import { Roles } from "../auth/entity/roles.entity";
 import { Courses } from "../courses/entity/courses.entity";
 import { Category } from "../courses/entity/category.entity";
+import { Lessons } from "../courses/entity/lessons.entity";
 
 export default (): TypeOrmModuleOptions => ({
  type: 'mysql',
@@ -18,6 +19,7 @@ export default (): TypeOrmModuleOptions => ({
    Roles,
    Courses,
    Category,
+   Lessons,
  ],
  entityPrefix: 'megak_',
  synchronize: true,

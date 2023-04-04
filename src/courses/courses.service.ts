@@ -8,12 +8,18 @@ import { User } from "../users/entity/users.entity";
 import { UpdateCourseDto } from "./dto/updateCourse.dto";
 import { IPaginationOptions, paginate, Pagination } from "nestjs-typeorm-paginate";
 import { Order } from "../utils/filtering/filtering";
+import { CreateLessonDto } from "./dto/createLesson.dto";
+import { Lessons } from "./entity/lessons.entity";
+import { UpdateLessonDto } from "./dto/updateLesson.dto";
+import { lessonData } from "../utils/filtering/returnData";
+import { CoursesWithLessons } from "./types/types";
 
 @Injectable()
 export class CoursesService {
   constructor(
     @InjectRepository(Category) private categoryRepository: Repository<Category>,
     @InjectRepository(Courses) private coursesRepository: Repository<Courses>,
+    @InjectRepository(Lessons) private lessonsRepository: Repository<Lessons>,
   ) {}
 
   public async createCourse(createCourseDto: CreateCourseDto, user: User): Promise<Courses> {
@@ -35,9 +41,20 @@ export class CoursesService {
     return paginate<Courses>(courses, options);
   }
 
-  public async viewCourse(courseId: string): Promise<Courses> {
+  public async viewCourse(courseId: string): Promise<CoursesWithLessons> {
     try {
-      return await this.coursesRepository.findOneOrFail({ where: { [Courses.ID_COLUMN]: courseId } });
+      const {id, title, slug, imgUrl, description, categories, lessons} = await this.coursesRepository.findOneOrFail({
+        where: { [Courses.ID_COLUMN]: courseId },
+        relations: [
+          Courses.LESSONS_RELATION,
+          Courses.CATEGORIES_RELATION
+        ]
+      });
+
+      const lessonsData = lessons.map(lessonData);
+
+      return {id, title, slug, imgUrl, description, categories, lessons: lessonsData};
+
     } catch (e) {
       throw new HttpException(
         { status: HttpStatus.UNPROCESSABLE_ENTITY, error: "Course with this id doesn't exist!" },
@@ -76,6 +93,65 @@ export class CoursesService {
     }
   }
 
+  public async createLesson(courseId: string, createLessonDto: CreateLessonDto, user: User): Promise<boolean> {
+    try {
+      const course = await this.coursesRepository.findOneOrFail({
+        where: { [Courses.ID_COLUMN]: courseId },
+        relations: [Courses.LESSONS_RELATION]
+      });
+
+      const lesson = new Lessons();
+      this.setUpLesson(lesson, createLessonDto, user);
+      lesson.status = true;
+
+      const {id, title, text} = await this.lessonsRepository.save(lesson);
+      course.lessons = [...course.lessons, lesson];
+      await this.coursesRepository.save(course);
+    } catch (e) {
+      throw new HttpException(
+        { status: HttpStatus.UNPROCESSABLE_ENTITY, error: "Something went wrong" },
+        HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+
+    return true;
+  }
+
+  public async updateLesson(courseId: string, lessonId: string, updateLessonDto: UpdateLessonDto, user: User): Promise<boolean> {
+    try {
+      const course = await this.coursesRepository.findOneOrFail({ where: { [Courses.ID_COLUMN]: courseId } });
+      const lesson = await this.lessonsRepository.findOneOrFail({ where: { [Lessons.ID_COLUMN]: lessonId } });
+
+      this.setUpLesson(lesson, updateLessonDto, user);
+
+      const {id, title, text} = await this.lessonsRepository.save(lesson);
+      course.lessons.push(lesson);
+      await this.coursesRepository.save(course);
+    } catch (e) {
+      throw new HttpException(
+        { status: HttpStatus.UNPROCESSABLE_ENTITY, error: "Something went wrong" },
+        HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+
+    return true;
+  }
+
+  public async deleteLesson(lessonId, user: User): Promise<boolean> {
+    try {
+      const lesson = await this.lessonsRepository.findOneOrFail({ where: { id: lessonId }, relations: [Lessons.CREATOR_RELATION]});
+
+      if (user.id === lesson.createdBy.id) {
+        await this.coursesRepository.delete(lesson.id);
+        return true;
+      } else {
+        throw new Error();
+      }
+    } catch (e) {
+      throw new HttpException(
+        { status: HttpStatus.UNPROCESSABLE_ENTITY, error: "You are not owner of this course or course doesn't exist any more!" },
+        HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+  }
+
   private async setUpCourse(course: Courses, data: CreateCourseDto, user: User) {
     const { title, description, slug, categoriesIds } = data;
 
@@ -86,5 +162,14 @@ export class CoursesService {
     course.description = description;
     course.categories = categories;
     course.updatedBy = user.id;
+  }
+
+  private setUpLesson(lesson: Lessons, data: CreateLessonDto, user: User) {
+    const { title, text, slug } = data;
+
+    lesson.title = title;
+    lesson.slug = slug;
+    lesson.text = text;
+    lesson.updatedBy = user.id;
   }
 }

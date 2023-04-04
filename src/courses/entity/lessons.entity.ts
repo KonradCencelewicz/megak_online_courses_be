@@ -2,21 +2,20 @@ import {
   BaseEntity,
   Column,
   CreateDateColumn,
-  DeleteDateColumn, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany,
+  DeleteDateColumn, Entity, JoinColumn, ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn
 } from "typeorm";
-import { ICourses } from '../types/types';
+import { ILessons } from "../types/types";
 import { User } from "../../users/entity/users.entity";
-import { Category } from "./category.entity";
-import { Lessons } from "./lessons.entity";
+import { Courses } from "./courses.entity";
 
 @Entity()
-export class Courses extends BaseEntity implements ICourses {
+export class Lessons extends BaseEntity implements ILessons {
   static ID_COLUMN = 'id';
   static TITLE_COLUMN = 'title';
   static SLUG_COLUMN = 'slug';
-  static DESCRIPTION_COLUMN = 'description';
+  static TEXT_COLUMN = 'text';
   static IMG_URL_COLUMN = 'imgUrl';
   static STATUS_COLUMN = 'status';
   static CREATED_AT_COLUMN = 'createdAt';
@@ -26,21 +25,20 @@ export class Courses extends BaseEntity implements ICourses {
   static UPDATED_BY_COLUMN = 'updatedBy';
   static DELETED_BY_COLUMN = 'deletedBy';
 
-  static CATEGORIES_RELATION = 'categories';
+  static CATEGORIES_RELATION = 'courses';
   static CREATOR_RELATION = 'createdBy';
-  static LESSONS_RELATION = 'lessons';
 
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({type: 'varchar', length: 100, unique: true })
+  @Column({type: 'varchar', length: 100})
   title: string;
 
   @Column({type: 'varchar', length: 100, unique: true})
   slug: string;
 
-  @Column({type: 'varchar', length: 1000})
-  description: string;
+  @Column({type: 'longtext'})
+  text: string;
 
   @Column()
   imgUrl: string;
@@ -48,12 +46,8 @@ export class Courses extends BaseEntity implements ICourses {
   @Column({ type:'boolean', name: 'status' })
   status: boolean;
 
-  @ManyToMany(() => Category)
-  @JoinTable()
-  categories: Category[];
-
-  @OneToMany(() => Lessons, (lessons) => lessons.course)
-  lessons: Lessons[]
+  @ManyToOne(() => Courses, (course) => course.lessons)
+  course: Courses
 
   @CreateDateColumn()
   createdAt: Date;
