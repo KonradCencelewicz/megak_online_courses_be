@@ -12,7 +12,7 @@ import { CreateLessonDto } from "./dto/createLesson.dto";
 import { Lessons } from "./entity/lessons.entity";
 import { UpdateLessonDto } from "./dto/updateLesson.dto";
 import { lessonData } from "../utils/filtering/returnData";
-import { CoursesWithLessons } from "./types/types";
+import { CoursesWithLessons, ReturnLesson } from "./types/types";
 
 @Injectable()
 export class CoursesService {
@@ -103,8 +103,9 @@ export class CoursesService {
       const lesson = new Lessons();
       this.setUpLesson(lesson, createLessonDto, user);
       lesson.status = true;
+      lesson.createdBy = user;
 
-      const {id, title, text} = await this.lessonsRepository.save(lesson);
+      await this.lessonsRepository.save(lesson);
       course.lessons = [...course.lessons, lesson];
       await this.coursesRepository.save(course);
     } catch (e) {
@@ -123,7 +124,7 @@ export class CoursesService {
 
       this.setUpLesson(lesson, updateLessonDto, user);
 
-      const {id, title, text} = await this.lessonsRepository.save(lesson);
+      await this.lessonsRepository.save(lesson);
       course.lessons.push(lesson);
       await this.coursesRepository.save(course);
     } catch (e) {
@@ -148,6 +149,20 @@ export class CoursesService {
     } catch (e) {
       throw new HttpException(
         { status: HttpStatus.UNPROCESSABLE_ENTITY, error: "You are not owner of this course or course doesn't exist any more!" },
+        HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+  }
+
+  public async viewLesson(lessonId: string): Promise<ReturnLesson> {
+    try {
+      const lesson = await this.lessonsRepository.findOneOrFail({
+        where: { [Courses.ID_COLUMN]: lessonId },
+      });
+
+      return lessonData(lesson);
+    } catch (e) {
+      throw new HttpException(
+        { status: HttpStatus.UNPROCESSABLE_ENTITY, error: "Lessons with this id doesn't exist!" },
         HttpStatus.UNPROCESSABLE_ENTITY);
     }
   }

@@ -24,7 +24,7 @@ import { UpdateCourseDto } from "./dto/updateCourse.dto";
 import { Pagination } from "nestjs-typeorm-paginate";
 import { CreateLessonDto } from "./dto/createLesson.dto";
 import { UpdateLessonDto } from "./dto/updateLesson.dto";
-import { CoursesWithLessons } from "./types/types";
+import { CoursesWithLessons, ReturnLesson } from "./types/types";
 
 @Controller('courses')
 export class CoursesController {
@@ -34,13 +34,11 @@ export class CoursesController {
 
   @UseGuards(new RolesGuard(new Reflector()))
   @UseGuards(JwtAuthGuard)
-  @Post('/:id/lesson')
-  public createLesson(
-    @Body() createLessonDto: CreateLessonDto,
-    @Param('id') courseId,
-    @Req() req: RequestWithUser
-  ): Promise<boolean> {
-    return this.coursesService.createLesson(courseId, createLessonDto, req.user);
+  @Patch('/:courseid/lesson/:id')
+  public viewLesson(
+    @Param('id') lessonId,
+  ): Promise<ReturnLesson> {
+    return this.coursesService.viewLesson(lessonId);
   }
 
   @UseGuards(new RolesGuard(new Reflector()))
@@ -54,6 +52,18 @@ export class CoursesController {
     @Req() req: RequestWithUser
   ): Promise<boolean> {
     return this.coursesService.updateLesson(courseId, lessonId, updateLessonDto, req.user);
+  }
+
+  @UseGuards(new RolesGuard(new Reflector()))
+  @UseGuards(JwtAuthGuard)
+  @Roles(RoleEnum.INSTRUCTOR)
+  @Post('/:id/lesson')
+  public createLesson(
+    @Body() createLessonDto: CreateLessonDto,
+    @Param('id') courseId,
+    @Req() req: RequestWithUser
+  ): Promise<boolean> {
+    return this.coursesService.createLesson(courseId, createLessonDto, req.user);
   }
 
   @UseGuards(new RolesGuard(new Reflector()))
