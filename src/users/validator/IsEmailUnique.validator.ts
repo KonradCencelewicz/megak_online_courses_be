@@ -21,6 +21,6 @@ export class IsEmailUnique implements ValidatorConstraintInterface {
   }
 
   defaultMessage(args: ValidationArguments): string {
-    return `We have user with this email ${args.property}`;
+    return `We have user with this ${args.property}`;
   }
 }

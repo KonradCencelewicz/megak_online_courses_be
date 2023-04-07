@@ -4,12 +4,13 @@ import { JwtService } from "@nestjs/jwt";
 import { CreateUserDto } from "../users/dto/createUser.dto";
 import { User } from "../users/entity/users.entity";
 import { jwtTokenDataRt, Tokens as TokensType } from "./types/type";
-import { RegisterResponse } from "../users/types/type";
+import { RegisterResponse, ReturnUser } from "../users/types/type";
 import jwtConfiguration from "../config/jwt.configuration";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { Tokens } from "./entity/tokens.entity";
 import { compareHashValue, hashValue } from "../utils/hashed/hashed";
+import { userData } from "../utils/filtering/returnData";
 
 @Injectable()
 export class AuthService {
@@ -33,13 +34,21 @@ export class AuthService {
     return user;
   }
 
-  async login(user: User): Promise<TokensType> {
+  async login(user: User): Promise<TokensType & { user: ReturnUser }> {
     const { access_token, refresh_token } = await this.getTokens(user.email, user.id);
+    //TODO fixit first time (when authorize user we should load roles)
+    const userWithRoles = await this.usersRepository.findOneOrFail({
+      where:
+        { id: user.id },
+      relations: [User.ROLES_RELATION]
+    })
+
     await this.updateRefreshTokenHash(user.id, refresh_token);
 
     return {
       access_token,
-      refresh_token
+      refresh_token,
+      user: userData(userWithRoles),
     }
   }
 

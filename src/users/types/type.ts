@@ -46,3 +46,4 @@ export interface UserDataIdUsername {
 }
 
 export type RegisterResponse = Omit<UserInterface , 'password' | 'createdAt' | 'updatedAt' | 'deletedAt' | 'isActive'>;
+export type ReturnUser= Pick<User , 'firstName' | 'lastName' | 'email' | 'roles' >;

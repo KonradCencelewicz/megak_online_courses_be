@@ -14,6 +14,8 @@ import { Courses } from "../../courses/entity/courses.entity";
 
 @Entity({ name: 'users' })
 export class User extends BaseEntity implements UserInterface{
+  static ROLES_RELATION = 'roles';
+
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
