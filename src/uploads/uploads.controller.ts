@@ -35,8 +35,9 @@ export class UploadsController {
     return await this.uploadsService.saveCourseImg(courseImg, courseId, req.user);
   }
 
-  @UseGuards(new RolesGuard(new Reflector()))
-  @UseGuards(JwtAuthGuard)
+  //TODO FIX: imgs should be in protected route
+  // @UseGuards(new RolesGuard(new Reflector()))
+  // @UseGuards(JwtAuthGuard)
   @Get('courses/:id/img')
   async downloadCourseImg(
     @Param('id') courseId: string,
