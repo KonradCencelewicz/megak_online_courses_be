@@ -11,6 +11,7 @@ import { Repository } from "typeorm";
 import { Tokens } from "./entity/tokens.entity";
 import { compareHashValue, hashValue } from "../utils/hashed/hashed";
 import { userData } from "../utils/filtering/returnData";
+import { Response } from 'express';
 
 @Injectable()
 export class AuthService {
@@ -34,9 +35,9 @@ export class AuthService {
     return user;
   }
 
-  async login(user: User): Promise<TokensType & { user: ReturnUser }> {
-    const { access_token, refresh_token } = await this.getTokens(user.email, user.id);
-    //TODO fixit first time (when authorize user we should load roles)
+  async login(user: User, res: Response): Promise<TokensType & { user: ReturnUser }> {
+    const { access_token, refresh_token, cookie } = await this.getTokens(user.email, user.id);
+    //TODO fixit: first time (when authorize user we should load roles)
     const userWithRoles = await this.usersRepository.findOneOrFail({
       where:
         { id: user.id },
@@ -44,10 +45,10 @@ export class AuthService {
     })
 
     await this.updateRefreshTokenHash(user.id, refresh_token);
+    res.setHeader('Set-Cookie', [cookie])
 
     return {
       access_token,
-      refresh_token,
       user: userData(userWithRoles),
     }
   }
@@ -64,7 +65,7 @@ export class AuthService {
     return await this.usersService.create(CreateUserDto);
   }
 
-  async refreshTokens(userData: jwtTokenDataRt): Promise<any> {
+  async refreshTokens(userData: jwtTokenDataRt, res: Response): Promise<any> {
     const user = await this.usersRepository.findOneOrFail({ where: { id: userData.sub }, relations: ['tokens'] });
 
     if(user.tokens === null) {
@@ -77,20 +78,23 @@ export class AuthService {
       throw new ForbiddenException('Access denied');
     }
 
-    return await this.login(user)
+    return await this.login(user, res)
   }
 
   private async getTokens(email: string, userId: string) {
     const payload = { username: email, sub: userId };
 
     const [access_token, refresh_token] = await Promise.all([
-      this.jwtService.signAsync({ ...payload }, {expiresIn: 60 * 15, secret: jwtConfiguration.secret_at}),
-      this.jwtService.signAsync({ ...payload }, {expiresIn: 60 * 60 * 24 * 7, secret: jwtConfiguration.secret_rt}),
+      this.jwtService.signAsync({ ...payload }, {expiresIn: jwtConfiguration.at_time, secret: jwtConfiguration.secret_at}),
+      this.jwtService.signAsync({ ...payload }, {expiresIn: jwtConfiguration.rt_time, secret: jwtConfiguration.secret_rt}),
     ]);
+
+    const cookie = `Refresh=${refresh_token}; HttpOnly; Path=/; Max-Age=${jwtConfiguration.rt_time}`;
 
     return {
       access_token,
-      refresh_token
+      refresh_token,
+      cookie,
     }
   }
 

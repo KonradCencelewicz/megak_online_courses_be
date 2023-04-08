@@ -1,18 +1,18 @@
 import { withUserDataFromToken, withUserDataFromTokenRt, withUser, withUserDataIdEmail } from "../../users/types/type";
+import { Request } from 'express';
 
 export interface TokensEntity extends Tokens{
   id: string;
 }
 
 export interface Tokens {
-  refresh_token: string;
   access_token: string;
 }
 
-export interface RequestWithUser extends Request, withUser {}
-export interface RequestWithUserDataFromToken extends Request, withUserDataFromToken {}
-export interface RequestWithUserDataIdEmail extends Request, withUserDataIdEmail {}
-export interface RequestWithUserDataFromTokenRt extends Request, withUserDataFromTokenRt {}
+export interface RequestWithUser extends Omit<Request, 'user'>, withUser {}
+export interface RequestWithUserDataFromToken extends Omit<Request, 'user'>, withUserDataFromToken {}
+export interface RequestWithUserDataIdEmail extends Omit<Request, 'user'>, withUserDataIdEmail {}
+export interface RequestWithUserDataFromTokenRt extends Omit<Request, 'user'>, withUserDataFromTokenRt {}
 
 export interface jwtTokenData {
   username: string;

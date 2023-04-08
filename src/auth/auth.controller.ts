@@ -1,10 +1,11 @@
-import { Body, Controller, HttpCode, HttpStatus, Post, Req, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, HttpCode, HttpStatus, Post, Req, Res, UseGuards } from "@nestjs/common";
 import { LocalAuthGuard } from "./local-auth.guard";
 import { RequestWithUser, RequestWithUserDataFromTokenRt } from "./types/type";
 import { AuthService } from "./auth.service";
 import { CreateUserDto } from '../users/dto/createUser.dto'
 import { JwtAuthGuard } from "./jwt-auth.guard";
 import { JwtRtAuthGuard } from "./jwt-rt-auth.guard";
+import { Response } from 'express';
 
 @Controller('auth')
 export class AuthController {
@@ -19,8 +20,11 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  login(@Req() req: RequestWithUser) {
-    return this.authService.login(req.user);
+  login(
+    @Req() req: RequestWithUser,
+    @Res({ passthrough: true }) res: Response
+  ) {
+    return this.authService.login(req.user, res);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -31,9 +35,12 @@ export class AuthController {
   }
 
   @UseGuards(JwtRtAuthGuard)
-  @Post('refresh')
+  @Get('refresh')
   @HttpCode(HttpStatus.OK)
-  refreshTokens(@Req() req: RequestWithUserDataFromTokenRt ) {
-    return this.authService.refreshTokens(req.user);
+  refreshTokens(
+    @Req() req: RequestWithUserDataFromTokenRt,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    return this.authService.refreshTokens(req.user, res);
   }
 }

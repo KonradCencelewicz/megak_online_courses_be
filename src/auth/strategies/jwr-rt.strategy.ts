@@ -8,16 +8,16 @@ import { Request } from 'express';
 export class JwtRtStrategy extends PassportStrategy(Strategy, 'jwt-refresh') {
   constructor() {
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      jwtFromRequest: ExtractJwt.fromExtractors([(request: Request) => {
+        return request?.cookies?.Refresh;
+      }]),
       secretOrKey: jwtConfig.secret_rt,
       passReqToCallback: true,
     });
   }
 
   async validate(req: Request, payload: any) {
-    const refreshToken = req.get('authorization')
-      .replace('Bearer', '')
-      .trim();
+    const refreshToken = req.cookies?.Refresh;
 
     return {
       ...payload,
