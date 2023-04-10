@@ -167,6 +167,10 @@ export class CoursesService {
     }
   }
 
+  public async viewCategories(): Promise<Category[]> {
+    return this.categoryRepository.find();
+  }
+
   private async setUpCourse(course: Courses, data: CreateCourseDto, user: User) {
     const { title, description, slug, categoriesIds } = data;
 

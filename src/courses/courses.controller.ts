@@ -32,6 +32,11 @@ export class CoursesController {
     private readonly coursesService: CoursesService,
   ) {}
 
+  @Get('/categories')
+  public viewCategoies() {
+    return this.coursesService.viewCategories();
+  }
+
   @UseGuards(new RolesGuard(new Reflector()))
   @UseGuards(JwtAuthGuard)
   @Patch('/:courseid/lesson/:id')
