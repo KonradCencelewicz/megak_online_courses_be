@@ -48,7 +48,12 @@ export class CoursesService {
         relations: [
           Courses.LESSONS_RELATION,
           Courses.CATEGORIES_RELATION
-        ]
+        ],
+        order: {
+          [Courses.LESSONS_RELATION]: {
+            [Courses.CREATED_AT_COLUMN] : 'ASC'
+          }
+        }
       });
 
       const lessonsData = lessons.map(lessonData);
