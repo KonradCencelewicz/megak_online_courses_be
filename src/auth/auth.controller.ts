@@ -5,7 +5,7 @@ import { AuthService } from "./auth.service";
 import { CreateUserDto } from '../users/dto/createUser.dto'
 import { JwtAuthGuard } from "./jwt-auth.guard";
 import { JwtRtAuthGuard } from "./jwt-rt-auth.guard";
-import { Response } from 'express';
+import { Request, Response } from 'express';
 
 @Controller('auth')
 export class AuthController {
@@ -42,5 +42,13 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
   ) {
     return this.authService.refreshTokens(req.user, res);
+  }
+
+  @Get('authenticated')
+  @HttpCode(HttpStatus.OK)
+  authenticated(
+    @Req() req: Request
+  ) {
+    return this.authService.authenticated(req);
   }
 }

@@ -11,7 +11,7 @@ import { Repository } from "typeorm";
 import { Tokens } from "./entity/tokens.entity";
 import { compareHashValue, hashValue } from "../utils/hashed/hashed";
 import { userData } from "../utils/filtering/returnData";
-import { Response } from 'express';
+import { Request, Response } from 'express';
 
 @Injectable()
 export class AuthService {
@@ -79,6 +79,14 @@ export class AuthService {
     }
 
     return await this.login(user, res)
+  }
+
+  async authenticated(req: Request): Promise<boolean> {
+    const { Refresh } = req.cookies;
+    if (Refresh !== undefined) {
+      return true;
+    }
+    return false;
   }
 
   private async getTokens(email: string, userId: string) {
