@@ -41,6 +41,17 @@ export class CoursesService {
     return paginate<Courses>(courses, options);
   }
 
+  public async viewInstructorsCourses(page: number, limit: number, user: User): Promise<Pagination<Courses>> {
+    const options: IPaginationOptions = {
+      limit,
+      page
+    }
+
+    const courses = this.coursesRepository.createQueryBuilder('courses').where('courses.createdBy = :createdBy', {createdBy: user.id});
+    courses.orderBy(Courses.CREATED_AT_COLUMN, Order.DESC);
+    return paginate<Courses>(courses, options);
+  }
+
   public async viewCourse(courseId: string): Promise<CoursesWithLessons> {
     try {
       const {id, title, slug, imgUrl, description, categories, lessons} = await this.coursesRepository.findOneOrFail({

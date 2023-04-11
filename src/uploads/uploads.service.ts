@@ -28,15 +28,18 @@ export class UploadsService {
     return true;
   }
 
-  public async sendCourseImg(courseId: string, res: Response): Promise<StreamableFile>  {
+  public async sendCourseImg(courseId: string, res: Response): Promise<StreamableFile | boolean>  {
     const course = await this.coursesRepository.findOneOrFail({ where: { id: courseId } });
-    const file = createReadStream(join(process.cwd(), course.imgUrl));
-    const fileName = course.imgUrl.split(/[\/\\]/).at(-1);
-    const fileExtension = course.imgUrl.split('.').at(-1);
-    res.set({
-      [HttpHeaders.CONTENT_TYPE]: 'image/' + fileExtension,
-      [HttpHeaders.CONTENT_DISPOSITION]: `attachment; filename="${fileName}"`,
-    });
-    return new StreamableFile(file);
+    if(course.imgUrl) {
+      const file = createReadStream(join(process.cwd(), course.imgUrl));
+      const fileName = course.imgUrl.split(/[\/\\]/).at(-1);
+      const fileExtension = course.imgUrl.split('.').at(-1);
+      res.set({
+        [HttpHeaders.CONTENT_TYPE]: 'image/' + fileExtension,
+        [HttpHeaders.CONTENT_DISPOSITION]: `attachment; filename="${fileName}"`,
+      });
+      return new StreamableFile(file);
+    }
+    return false;
   }
 }

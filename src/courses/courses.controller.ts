@@ -83,6 +83,18 @@ export class CoursesController {
   }
 
   @UseGuards(new RolesGuard(new Reflector()))
+  @Roles(RoleEnum.INSTRUCTOR)
+  @UseGuards(JwtAuthGuard)
+  @Get('/instructors')
+  public viewInstructorsCourses(
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
+    @Req() req: RequestWithUser
+  ): Promise<Pagination<Courses>> {
+    return this.coursesService.viewInstructorsCourses(page, limit, req.user);
+  }
+
+  @UseGuards(new RolesGuard(new Reflector()))
   @UseGuards(JwtAuthGuard)
   @Get('/')
   public viewCourses(
