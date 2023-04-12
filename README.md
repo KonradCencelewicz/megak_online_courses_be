@@ -2,37 +2,32 @@
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
 </p>
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
-
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
-
-## Description
+## Opis
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
 ## Installation
 
+Aby zainstalować aplikację po jej pobraniu z repozytorium wykonaj poniższy skrypt.
 ```bash
 $ npm install
 ```
 
-## Running the app
+## Set up
+Przekopiuj zawartość .env.megak.example i uzupełnij ją swoimi danymi.
+Wykorzystywana baza danych to mysql.
+Pierwsza sekcja tyczy się danych bazy danych. Uzupełnij ją swoimi danymi.
+DATA_DATABASE tutaj podaj nazwę tabeli wcześniej utworzonej ręcznie w mysql.
+
+Kolejnie stwórz folder w głównym folderze (nie src tylko jeden level wyżej)
+folder o nazwie uploads a w nim dwa foldery files oraz temp.
+UPLOAD_TEMP_DIR= ściezka do pliku temp
+UPLOAD_PATH= ścieżka do pliki files
+MAX_FILE_SIZE= tutaj ustawiamy maksymalny rozmiar uplodowanego pliku
+
+ALLOWED_ORIGIN= na końcu ustawaimy origin który może wysyłać do nas zapytania (nasz FE)
+
+## Uruchomienie aplikacji
 
 ```bash
 # development
@@ -45,29 +40,21 @@ $ npm run start:dev
 $ npm run start:prod
 ```
 
-## Test
+## Po pierwszym uruchomieniu aplikacji
 
-```bash
-# unit tests
-$ npm run test
+Wejdź do bazy dancyh i ręcznie dodaj rekordy:
+tabela **category** [dodaj kategorie które chcesz obsługiwać w aplikacji np. id=1, name=Matematyka]
+tabela **role** dodaj następujące role id=1, role=ADMIN, id=2, role=INSTRUCTOR, id=3, role=STUDENT
 
-# e2e tests
-$ npm run test:e2e
+Następnie ponownie uruchom aplikację.
+Zarejestruj się przy użyciu formularza.
+Kolejnie wróc do bazy danych i w tabeli **users_roles_roles** dodaj rekordy łączące Cie z rolami 1, 2 (role 3 dostajesz automatycznie przy rejestracji)
 
-# test coverage
-$ npm run test:cov
-```
+Od teraz twoje konto ma uprawnienia admina, instruktora
 
-## Support
+## Rozwój na przyszłość
+1. Obieranie obrazków i wideo do lekcji
+2. Napisanie seedera pozwalającego automatyczne stworzyć dane setupowe przy pierwszym uruchomieniu.
+3. Dodanie możliwość aby student zapisywał się na kursy (a nie tak jak teraz miał do nich z automatu dostęp)
+4. Zadania administratora (banowanie kont itp)
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).
