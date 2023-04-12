@@ -39,7 +39,7 @@ export class CoursesController {
 
   @UseGuards(new RolesGuard(new Reflector()))
   @UseGuards(JwtAuthGuard)
-  @Patch('/:courseid/lesson/:id')
+  @Get('/:courseid/lesson/:id')
   public viewLesson(
     @Param('id') lessonId,
   ): Promise<ReturnLesson> {
